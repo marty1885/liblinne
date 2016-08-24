@@ -1,7 +1,7 @@
 # liblinne
 
 ## What is this
-This is the audio synthesis engine developed fo the Linne project
+This is the audio synthesis engine developed for the Linne project
 
 ## How to build
 Use CMake.

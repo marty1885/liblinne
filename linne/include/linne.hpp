@@ -27,10 +27,10 @@ public:
 		alGenBuffers(1, &buffer);
 
 		// Generate sine wave data
-		for (int i = 0; i < BUFFER_LENGTH; ++i)
+		for (int i=0; i<BUFFER_LENGTH;i++)
 		{
-			data[i*2] = sin(2.0 * M_PI * SOUND_HZ * i / SAMPLING_HZ) * SHRT_MAX;
-			data[i*2+1] = -1 * sin(2.0 * M_PI * SOUND_HZ * i / SAMPLING_HZ) * SHRT_MAX; // antiphase
+			data[i*2] = sinf(2.0 * M_PI * SOUND_HZ * i / SAMPLING_HZ) * SHRT_MAX;
+			data[i*2+1] = -1 * sinf(2.0 * M_PI * SOUND_HZ * i / SAMPLING_HZ) * SHRT_MAX; // antiphase
 		}
 
 		// Output looping sine wave

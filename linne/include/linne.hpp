@@ -24,9 +24,9 @@ public:
 		device = alcOpenDevice(NULL);
 		context = alcCreateContext(device, NULL);
 		alcMakeContextCurrent(context);
-		alGenBuffers(1, &buffer);
 
 		// Generate sine wave data
+		alGenBuffers(1, &buffer);
 		for (int i=0; i<BUFFER_LENGTH;i++)
 		{
 			data[i*2] = sinf(2.0 * M_PI * SOUND_HZ * i / SAMPLING_HZ) * SHRT_MAX;
@@ -61,6 +61,8 @@ public:
 		alSourceStop(source);
 	}
 protected:
+
+	//OpenAL stuff
 	ALCdevice *device;
 	ALCcontext *context;
 	ALshort* data = nullptr;

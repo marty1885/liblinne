@@ -1,0 +1,22 @@
+bin/
+build/
+build-linux/
+build-mingw/
+lib/
+CMakeFiles/
+CMakeCache.txt
+*.cmake
+Makefile
+*.so
+*.dll
+*.exe
+*.sh
+*.swp
+install_manifest.txt
+.DS_Store
+
+#Gnome backup files
+*~
+
+#any hidden folder
+.*/

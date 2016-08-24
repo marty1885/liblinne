@@ -6,5 +6,7 @@
 
 int main()
 {
+	Linne::PlaybackSystem playbackSystem;
+	playbackSystem.play();
 	return 0;
 }

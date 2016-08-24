@@ -1,5 +1,7 @@
 cmake_minimum_required (VERSION 3.0)
 
+#set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
 option(DEBUG_MODE "Enable debug flags and others" OFF)
 
 #Some overdone optimization flags.

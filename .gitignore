@@ -1,22 +1,43 @@
-bin/
-build/
-build-linux/
-build-mingw/
-lib/
-CMakeFiles/
-CMakeCache.txt
-*.cmake
-Makefile
+### C++ ###
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
 *.so
+*.dylib
 *.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
 *.exe
-*.sh
-*.swp
+*.out
+*.app
+
+
+### CMake ###
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Makefile
+cmake_install.cmake
 install_manifest.txt
-.DS_Store
+CTestTestfile.cmake
 
-#Gnome backup files
-*~
-
-#any hidden folder
-.*/
+#build stuff
+bin/
+lib/

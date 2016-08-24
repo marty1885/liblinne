@@ -19,55 +19,53 @@ class PlaybackSystem
 public:
 	PlaybackSystem()
 	{
-	}
-
-	virtual ~PlaybackSystem()
-	{
-	}
-
-	void play()
-	{
-		ALCdevice *device;
-		ALCcontext *context;
-		ALshort data[BUFFER_LENGTH*2];
-		ALuint buffer, source;
-		int i;
-
 		// Initialization
+		ALshort* data = new ALshort[BUFFER_LENGTH*2];
 		device = alcOpenDevice(NULL);
 		context = alcCreateContext(device, NULL);
 		alcMakeContextCurrent(context);
 		alGenBuffers(1, &buffer);
 
 		// Generate sine wave data
-		for (i = 0; i < BUFFER_LENGTH; ++i)
+		for (int i = 0; i < BUFFER_LENGTH; ++i)
 		{
 			data[i*2] = sin(2.0 * M_PI * SOUND_HZ * i / SAMPLING_HZ) * SHRT_MAX;
 			data[i*2+1] = -1 * sin(2.0 * M_PI * SOUND_HZ * i / SAMPLING_HZ) * SHRT_MAX; // antiphase
 		}
 
 		// Output looping sine wave
-		alBufferData(buffer, AL_FORMAT_STEREO16, data, sizeof(data), SAMPLING_HZ);
+		alBufferData(buffer, AL_FORMAT_STEREO16, data, sizeof(ALshort)*BUFFER_LENGTH*2, SAMPLING_HZ);
 		alGenSources(1, &source);
 		alSourcei(source, AL_BUFFER, buffer);
 		alSourcei(source, AL_LOOPING, AL_TRUE);
-		alSourcePlay(source);
+	}
 
-		// Wait to exit
-		printf("Press any key to exit.");
-		getchar();
-
+	virtual ~PlaybackSystem()
+	{
 		// Finalization
-		alSourceStop(source);
+		delete [] data;
+		data = nullptr;
 		alDeleteSources(1, &source);
 		alDeleteBuffers(1, &buffer);
-		//al_check_error();
 		alcMakeContextCurrent(NULL);
 		alcDestroyContext(context);
 		alcCloseDevice(device);
 	}
-protected:
 
+	void play()
+	{
+		alSourcePlay(source);
+		// Wait to exit
+		printf("Press any key to exit.");
+		getchar();
+		alSourceStop(source);
+	}
+protected:
+	ALCdevice *device;
+	ALCcontext *context;
+	ALshort* data = nullptr;
+	ALuint buffer;
+	ALuint source;
 
 };
 

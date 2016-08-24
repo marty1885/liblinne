@@ -1,3 +1,3 @@
-#include <liblinne.hpp>
+#include <linne.hpp>
 
 using namespace Linne;

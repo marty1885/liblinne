@@ -1,4 +1,4 @@
-#include <liblinne.hpp>
+#include <linne.hpp>
 
 #include <iostream>
 #include <vector>

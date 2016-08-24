@@ -14,6 +14,12 @@ namespace Linne
 #define BUFFER_LENGTH (SECOND * SAMPLING_HZ)
 #define SOUND_HZ 440.0
 
+class AudioClip
+{
+public:
+protected:
+};
+
 class PlaybackSystem
 {
 public:

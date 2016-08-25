@@ -110,8 +110,10 @@ public:
 			m_data[i*2+1] = -1 * sinf(2.0 * M_PI * SOUND_HZ * i / SAMPLING_HZ) * SHRT_MAX; // antiphase
 		}
 
-		alBufferData(m_buffer[0], AL_FORMAT_STEREO16, m_data, sizeof(ALshort)*BUFFER_LENGTH*2, SAMPLING_HZ);
-		alBufferData(m_buffer[1], AL_FORMAT_STEREO16, m_data, sizeof(ALshort)*BUFFER_LENGTH*2, SAMPLING_HZ);
+		for(int i=0;i<BUFFER_NUM;i++)
+		{
+			alBufferData(m_buffer[i], AL_FORMAT_STEREO16, m_data, sizeof(ALshort)*BUFFER_LENGTH*2, SAMPLING_HZ);
+		}
 		alGenSources(1, &m_source);
 		alSourcei(m_source, AL_LOOPING, AL_FALSE);
 
@@ -138,9 +140,6 @@ public:
 	{
 		keepRun = true;
 		audioStreamingThread = std::thread([this]{this->stream();});
-
-		// Wait to exit
-		alSourcePlay(m_source);
 	}
 
 	void stop()
@@ -153,22 +152,28 @@ public:
 			alSourceStop(m_source);
 		}
 	}
+
+	void generate(float* outputBuffer, int framesPerBuffer)
+	{
+	}
 protected:
 
 	void stream()
 	{
+		currentFrame = 0;
 		int lastBufferNum = 0;
+		alSourcePlay(m_source);
 		while(keepRun)
 		{
 			int bufferNum;
 			alGetSourcei(m_source, AL_BUFFERS_PROCESSED, &bufferNum);
-			if(bufferNum != lastBufferNum)
+			if(bufferNum != lastBufferNum && keepRun)
 			{
-				int newBufferId = bufferNum % BUFFER_NUM;
+				int bufferIndex = BUFFER_NUM+bufferNum-1;
+				int newBufferId = (bufferNum-1) % BUFFER_NUM;
 				alSourceQueueBuffers(m_source, 1, &m_buffer[newBufferId]);
 				lastBufferNum = bufferNum;
 			}
-			std::cout << bufferNum << std::endl;
 		}
 	}
 
@@ -180,6 +185,8 @@ protected:
 	ALshort* m_data = nullptr;
 	ALuint* m_buffer = nullptr;
 	ALuint m_source;
+
+	int64_t currentFrame = 0;
 
 };
 

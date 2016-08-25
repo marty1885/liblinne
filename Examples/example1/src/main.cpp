@@ -6,7 +6,7 @@
 
 int main()
 {
-	Linne::PlaybackSystem playbackSystem;
+	Linne::AudioSystem audioSystem;
 	Linne::SoundBuffer buffer;
 	float* audio = new float[44100*2];
 	for(int i=0;i<44100;i++)
@@ -15,12 +15,12 @@ int main()
 		audio[i*2+1] = sinf(2.0 * M_PI * SOUND_HZ * i / SAMPLING_HZ);
 	}
 	buffer.loadFromMemory(audio,44100,2,44100);
-	playbackSystem.play();
+	audioSystem.play();
 
 	printf("Press any key to exit.");
 	getchar();
 
-	playbackSystem.stop();
+	audioSystem.stop();
 
 	delete [] audio;
 	return 0;

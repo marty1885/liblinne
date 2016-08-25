@@ -90,10 +90,10 @@ protected:
 	int m_channelCount = 0;
 };
 
-class PlaybackSystem
+class AudioSystem
 {
 public:
-	PlaybackSystem()
+	AudioSystem()
 	{
 		// Initialization
 		m_data = new ALshort[BUFFER_LENGTH*2];
@@ -121,7 +121,7 @@ public:
 		alSourceQueueBuffers(m_source, 1, &m_buffer[0]);
 	}
 
-	virtual ~PlaybackSystem()
+	virtual ~AudioSystem()
 	{
 		stop();
 		// Finalization

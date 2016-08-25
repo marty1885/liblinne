@@ -17,6 +17,11 @@ int main()
 	buffer.loadFromMemory(audio,44100,2,44100);
 	playbackSystem.play();
 
+	printf("Press any key to exit.");
+	getchar();
+
+	playbackSystem.stop();
+
 	delete [] audio;
 	return 0;
 }

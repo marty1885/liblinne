@@ -10,12 +10,18 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <thread>
+#include <atomic>
+#include <future>
+#include <iostream>
+
 namespace Linne
 {
 #define SECOND 1
 #define SAMPLING_HZ 44100
 #define BUFFER_LENGTH (SECOND * SAMPLING_HZ)
 #define SOUND_HZ 440.0
+#define BUFFER_NUM 2
 
 class SoundBuffer
 {
@@ -96,46 +102,83 @@ public:
 		alcMakeContextCurrent(m_context);
 
 		// Generate sine wave data
-		alGenBuffers(1, &m_buffer);
+		m_buffer = new ALuint[BUFFER_NUM];
+		alGenBuffers(BUFFER_NUM, m_buffer);
 		for (int i=0; i<BUFFER_LENGTH;i++)
 		{
 			m_data[i*2] = sinf(2.0 * M_PI * SOUND_HZ * i / SAMPLING_HZ) * SHRT_MAX;
 			m_data[i*2+1] = -1 * sinf(2.0 * M_PI * SOUND_HZ * i / SAMPLING_HZ) * SHRT_MAX; // antiphase
 		}
 
-		alBufferData(m_buffer, AL_FORMAT_STEREO16, m_data, sizeof(ALshort)*BUFFER_LENGTH*2, SAMPLING_HZ);
+		alBufferData(m_buffer[0], AL_FORMAT_STEREO16, m_data, sizeof(ALshort)*BUFFER_LENGTH*2, SAMPLING_HZ);
+		alBufferData(m_buffer[1], AL_FORMAT_STEREO16, m_data, sizeof(ALshort)*BUFFER_LENGTH*2, SAMPLING_HZ);
 		alGenSources(1, &m_source);
-		alSourcei(m_source, AL_BUFFER, m_buffer);
 		alSourcei(m_source, AL_LOOPING, AL_FALSE);
+
+		alSourceQueueBuffers(m_source, 1, &m_buffer[0]);
+		alSourceQueueBuffers(m_source, 1, &m_buffer[0]);
 	}
 
 	virtual ~PlaybackSystem()
 	{
+		stop();
 		// Finalization
-		delete [] m_data;
-		m_data = nullptr;
 		alDeleteSources(1, &m_source);
-		alDeleteBuffers(1, &m_buffer);
+		alDeleteBuffers(BUFFER_NUM, m_buffer);
 		alcMakeContextCurrent(NULL);
 		alcDestroyContext(m_context);
 		alcCloseDevice(m_device);
+		delete [] m_data;
+		m_data = nullptr;
+		delete [] m_buffer;
+		m_buffer = nullptr;
 	}
 
 	void play()
 	{
+		keepRun = true;
+		audioStreamingThread = std::thread([this]{this->stream();});
+
 		// Wait to exit
 		alSourcePlay(m_source);
-		printf("Press any key to exit.");
-		getchar();
-		alSourceStop(m_source);
+	}
+
+	void stop()
+	{
+		if(keepRun == true)
+		{
+			alSourceStop(m_source);
+			keepRun = false;
+			audioStreamingThread.join();
+			alSourceStop(m_source);
+		}
 	}
 protected:
 
+	void stream()
+	{
+		int lastBufferNum = 0;
+		while(keepRun)
+		{
+			int bufferNum;
+			alGetSourcei(m_source, AL_BUFFERS_PROCESSED, &bufferNum);
+			if(bufferNum != lastBufferNum)
+			{
+				int newBufferId = bufferNum % BUFFER_NUM;
+				alSourceQueueBuffers(m_source, 1, &m_buffer[newBufferId]);
+				lastBufferNum = bufferNum;
+			}
+			std::cout << bufferNum << std::endl;
+		}
+	}
+
 	//OpenAL stuff
+	std::atomic<bool> keepRun;
+	std::thread audioStreamingThread;
 	ALCdevice *m_device;
 	ALCcontext *m_context;
 	ALshort* m_data = nullptr;
-	ALuint m_buffer;
+	ALuint* m_buffer = nullptr;
 	ALuint m_source;
 
 };
